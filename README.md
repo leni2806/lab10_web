@@ -1,10 +1,4 @@
-# 🌸 **Praktikum 9 – PHP Modular, Routing & Authentication (Enhanced CRUD)**
-
-# **UNIVERSITAS PELITA BANGSA**
-
-## **LAPORAN PRAKTIKUM 9 – PEMROGRAMAN WEB**
-
-### **Topik: Modular PHP, Routing, Login, dan CRUD Data Barang**
+# 🌸 Praktikum 10 — Implementasi Modularisasi dengan Class Library (Form & Database)
 
 **Nama**: LENI  
 **NIM**: 312410442  
@@ -14,233 +8,144 @@
 
 ---
 
-## 📋 **Deskripsi Project**
+# 🎯 1. Tujuan Praktikum
 
-Praktikum 9 ini melanjutkan Praktikum 8 (CRUD Data Barang) dengan melakukan **refactoring struktur folder**, menambahkan **routing**, **pemisahan module**, **template header/footer**, dan **autentikasi login sederhana**.
+Praktikum 10 bertujuan untuk menerapkan **konsep modularisasi** pada project PHP sebelumnya (Praktikum 9) dengan cara:
 
-Proyek ini dibangun menggunakan:
+### 🌸 Membuat Class Library untuk Form
 
-* **PHP (Modular + Routing)**  
-* **MySQL**  
-* **HTML & CSS Theme Soft Pastel Cute**  
-* **Session (login/logout)**  
+Supaya pembuatan form tidak lagi ditulis secara manual (HTML), tetapi menggunakan class OOP.
 
-Aplikasi mencakup:
+### 🌸 Membuat Class Library untuk Database (Koneksi & CRUD)
 
-* Dashboard  
-* Modul Data Barang (list, tambah, edit, hapus)  
-* Sistem Login & Logout  
-* Upload & tampilan gambar barang  
+Supaya koneksi database tidak lagi procedural (`mysqli_*`), tetapi OOP menggunakan class Database.
+
+### 🌸 Mengintegrasikan kedua class tersebut dalam project Praktikum 9
+
+Minimal diterapkan pada fitur **Tambah Data**.
 
 ---
 
-## 🎯 **Tujuan Praktikum**
+# 🗂️🌸 2. Struktur Folder Project Setelah Modularisasi
 
-* Memisahkan file PHP ke struktur folder terorganisir  
-* Memahami konsep **routing dinamis menggunakan index.php?page=...**  
-* Menerapkan **session login**  
-* Mengembangkan middleware sederhana: halaman hanya dapat dibuka jika login  
-* Menggunakan template **header.php** dan **footer.php**  
-* Menyempurnakan CRUD Data Barang dari Praktikum 8  
-* Menambahkan tampilan menarik menggunakan CSS pastel yang modern  
+Struktur folder setelah menambahkan **Form.php** dan **DatabaseClass.php**:
 
----
-
-## 🏗️ **Struktur Project**
-
-project_praktikum9/
-│ index.php                      # Router utama
-│
+```
+project_praktikum9-10/
+├── index.php
 ├── config/
-│     └── database.php           # Koneksi database
-│
-├── views/
-│     ├── header.php             # Template header
-│     ├── footer.php             # Template footer
-│     └── dashboard.php          # Dashboard
-│
+│   ├── database.php             # koneksi lama (procedural)
+│   └── DatabaseClass.php        # koneksi baru (OOP) — praktikum 10
 ├── modules/
-│     ├── user/
-│     │     ├── list.php         # List data barang
-│     │     ├── add.php          # Tambah barang
-│     │     ├── edit.php         # Edit barang
-│     │     └── delete.php       # Hapus barang
-│     │
-│     └── auth/
-│           ├── login.php        # Halaman login
-│           └── logout.php       # Proses logout
-│
+│   ├── Form.php                 # class Form — praktikum 10
+│   ├── auth/                    # login, logout
+│   ├── user/
+│   │   ├── add.php              # pakai class Form
+│   │   ├── save_add.php         # pakai class Database
+│   │   ├── list.php             # daftar barang
+│   │   ├── edit.php
+│   │   ├── delete.php
+├── views/
+│   ├── header.php
+│   ├── footer.php
+│   └── dashboard.php
 └── assets/
-      ├── css/style.css          
-      ├── js/main.js             # Interaksi JS
-      └── img/                   # Folder gambar (hp_oppo, hp_samsung, hp_xiomi, dll)
+    ├── css/
+    ├── js/
+    ├── img/
+    └── uploads/                 # upload gambar
 ```
 
 ---
 
-## 🛠️ **Fitur Utama**
+# 🧱 3. Class Form (modules/Form.php)
 
-### 🌸 1. Login & Logout (Authentication)
+Class Form dibuat untuk menggantikan HTML form manual menjadi lebih modular.
 
-* Login menggunakan session  
-* Redirect otomatis ke dashboard  
-* Protect halaman: hanya user login yang bisa akses data barang  
-* Tombol Logout tersedia di navbar  
+### Fitur yang mendukung:
 
-### 🌸 2. Dashboard
+* Text input
+* Number input
+* Textarea
+* Select (dropdown)
+* File upload
+* Tombol submit otomatis
 
-* Tampilan modern pastel  
-* Menampilkan shortcut module  
-* UI clean & estetik sesuai tema soft pastel cute  
-
-### 🌸 3. CRUD Data Barang
-
-* Menampilkan tabel barang lengkap  
-* Fitur upload gambar barang (hp_oppo, hp_samsung, hp_xiomi)  
-* Jika data tidak punya gambar → tampil **No Image**  
-* Jika ada gambar → ditampilkan dengan style rounded  
-
----
-### 🌸 4. Routing Dinamis 
-
-Struktur akses:
-
-```php
-index.php?page=dashboard
-index.php?page=auth/login
-index.php?page=user/list
-index.php?page=user/add
-index.php?page=user/edit&id=1
-index.php?page=user/delete&id=1
-```
-
+Class Form digunakan di file `modules/user/add.php`.
 
 ---
 
-## 🔧 **Instalasi & Cara Menjalankan**
+# 🧱 4. Class Database (config/DatabaseClass.php)
 
-### 1. Buat Database
+Class Database dibuat untuk melakukan:
 
-```sql
-CREATE DATABASE praktikum9;
-USE praktikum9;
+* koneksi database secara OOP
+* insert()
+* get() / select
+* update()
+* delete()
+* escape string otomatis
 
-CREATE TABLE data_barang (
-    id_barang INT PRIMARY KEY AUTO_INCREMENT,
-    nama VARCHAR(100) NOT NULL,
-    kategori VARCHAR(50) NOT NULL,
-    harga_beli DECIMAL(10,2) NOT NULL,
-    harga_jual DECIMAL(10,2) NOT NULL,
-    stok INT NOT NULL,
-    gambar VARCHAR(255)
-);
+Dipakai di `modules/user/save_add.php`.
 
-
-### 2. pastikan database.php sudah benar
+Class ini menggantikan koneksi lama:
 
 ```php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "praktikum9";
-
-$conn = new mysqli($host, $user, $pass, $db);
+include 'config/database.php';
+$conn = mysqli_connect(...);
 ```
-
-### 3. Jalankan di Browser
-Buka di browser:
-
-http://localhost/project_praktikum9/project/index.php?page=auth/login
-
-
-### 📸 Tangkapan Layar (Screenshot)
-✨ Login Page 
-
-<img src="/login.png">
-
-✨ Dashboard
-
-<img src="/dashboard.png">
-
-✨ List Data Barang
-
-<img src="/data.png">
-
-✨ Form Tambah Barang
-
-<img src="/tambah.png">
-
-✨ Form Edit Barang
-
-<img src="/edit.png">
-
-✨ Form Hapus Barang
-
-<img src="/hapus.png">
-
-
-### 💻 Penjelasan Routing (index.php)
-
-```php
-$page = $_GET['page'] ?? 'dashboard';
-$path = __DIR__ . '/modules/' . $page . '.php';
-
-if (file_exists($path)) {
-    include $path;
-} else {
-    echo "404 - Halaman tidak ditemukan";
-}
-```
-
-
-Routing otomatis membuka file sesuai nama module.
-Contoh: page=user/list → /modules/user/list.php
-
-💗 Penjelasan Login
-
-```php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $_SESSION['user'] = 'admin';
-    header("Location: /project_praktikum9/project/index.php?page=dashboard");
-}
-```
-Session untuk autentikasi dasar.
 
 ---
 
+# 🌸 5. Implementasi Modularisasi Pada Project
 
-📦 Penjelasan Upload Gambar
+Pada praktikum 10, minimal dua file berikut menggunakan class OOP:
 
-Pada tambah & edit:
+## ✔🌸 add.php → memakai class Form
+
+Contoh:
 
 ```php
-$nama_file = time() . '_' . $_FILES['gambar']['name'];
-move_uploaded_file($_FILES['gambar']['tmp_name'], 'assets/img/' . $nama_file);
+$form = new Form('save_add.php', 'Simpan');
+$form->addField('nama','Nama');
+$form->addField('kategori','Kategori','select',[...]);
+$form->render();
 ```
 
-Disimpan ke database:
+## ✔🌸 save_add.php → memakai class Database
 
-assets/img/hp_oppo.png
+Contoh:
+
+```php
+$db = new Database();
+$db->insert('data_barang', $data);
+```
+---
+
+# 📷 6. Daftar Screenshot 
+
+### 1 Struktur folder project
+<img src="/struktur.png">
+
+### 2🌸 first
+<img src="/2.png">
+
+### 3🌸 index
+<img src="/1.png">
+
+### 4🌸 tambah
+<img src="/3.png">
 
 
-Ditampilkan dengan:
-
-<img src="assets/img/<?= $row['gambar'] ?>">
-
-📝 Kesimpulan
-
-Praktikum 9 melatih pembuatan aplikasi PHP modular dengan menggunakan:
-
-👉🏻 routing
-
-👉🏻 modularisasi file
-
-👉🏻 session login
-
-👉🏻 CRUD lanjutan prak 8
-
-👉🏻 upload gambar
-
-👉🏻 tampilan menggunakan style css
 
 
+---
+
+# 🧠🌸 7. Kesimpulan Praktikum
+
+Dengan menambahkan **class Form** dan **class Database**, project Praktikum 9 kini menjadi lebih modular:
+
+* Kode lebih rapi dan terstruktur
+* Tidak lagi menulis HTML form berulang
+* Koneksi database lebih aman & mudah digunakan
+* Setiap fitur dapat dipanggil cukup dengan memanggil class
